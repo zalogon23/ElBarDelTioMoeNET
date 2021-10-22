@@ -2,6 +2,7 @@ using System;
 using backend.Graphs.GraphTypes;
 using backend.Models;
 using backend.Services;
+using GraphQL;
 using GraphQL.Types;
 
 namespace backend.Graphs.Queries
@@ -20,10 +21,16 @@ namespace backend.Graphs.Queries
       );
       FieldAsync<BeverageType>(
           "beverage",
+          arguments: new QueryArguments(
+            new QueryArgument<NonNullGraphType<StringGraphType>>
+            {
+              Name = "id",
+              Description = "The ID of the required beverage."
+            }
+          ),
           resolve: async context =>
           {
-            var beverage = await beverages.GetBeverage();
-            Console.WriteLine(beverage.Name);
+            var beverage = await beverages.GetBeverage(context.GetArgument<string>("id"));
             return beverage;
           }
       );

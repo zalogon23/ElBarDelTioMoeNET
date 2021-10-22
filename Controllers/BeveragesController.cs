@@ -23,10 +23,11 @@ namespace backend.Controllers
     public async Task<IActionResult> GraphQL(GraphQLRequestDto graphQLRequestDto)
     {
       var schema = new Schema { Query = new BeveragesQuery(_beverages) };
+      var inputs = graphQLRequestDto.Variables.ToInputs();
       var json = await schema.ExecuteAsync(_ =>
       {
         _.Query = graphQLRequestDto.Query;
-        _.Inputs = graphQLRequestDto.Variables;
+        _.Inputs = inputs;
       });
 
       if (json is null)

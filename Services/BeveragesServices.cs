@@ -21,10 +21,10 @@ namespace backend.Services
       var beverages = await _beverages.Find(x => true).ToListAsync();
       return beverages;
     }
-    public async Task<Beverage> GetBeverage()
+    public async Task<Beverage> GetBeverage(string id)
     {
-      var beverage = await _beverages.Find(x => true).FirstOrDefaultAsync();
-      Console.WriteLine(beverage.Name);
+      Console.WriteLine(id);
+      var beverage = await _beverages.Find(bev => bev.Id == id).FirstOrDefaultAsync();
       return beverage;
     }
   }

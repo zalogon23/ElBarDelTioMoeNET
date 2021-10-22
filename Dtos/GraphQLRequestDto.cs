@@ -5,8 +5,8 @@ namespace backend.Dtos
 {
   public class GraphQLRequestDto
   {
-      [Required]
+    [Required]
     public string Query { get; set; }
-    public Inputs Variables { get; set; }
+    public string Variables { get; set; }
   }
 }
