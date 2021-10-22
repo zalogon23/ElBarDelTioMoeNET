@@ -27,5 +27,11 @@ namespace backend.Services
       var beverage = await _beverages.Find(bev => bev.Id == id).FirstOrDefaultAsync();
       return beverage;
     }
+    public async Task<Beverage> CreateBeverage(Beverage beverage)
+    {
+      await _beverages.InsertOneAsync(beverage);
+      Console.WriteLine(beverage.Id);
+      return beverage;
+    }
   }
 }

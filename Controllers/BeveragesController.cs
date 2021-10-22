@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using backend.Dtos;
+using backend.Graphs.Mutations;
 using backend.Graphs.Queries;
 using backend.Services;
 using GraphQL;
@@ -22,7 +23,11 @@ namespace backend.Controllers
     [HttpPost("graphql")]
     public async Task<IActionResult> GraphQL(GraphQLRequestDto graphQLRequestDto)
     {
-      var schema = new Schema { Query = new BeveragesQuery(_beverages) };
+      var schema = new Schema
+      {
+        Query = new BeveragesQuery(_beverages),
+        Mutation = new BeveragesMutation(_beverages),
+      };
       var inputs = graphQLRequestDto.Variables.ToInputs();
       var json = await schema.ExecuteAsync(_ =>
       {
