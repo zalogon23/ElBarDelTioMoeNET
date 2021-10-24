@@ -8,9 +8,9 @@ using GraphQL.Types;
 
 namespace backend.Graphs.Mutations
 {
-  public class BeveragesMutation : ObjectGraphType
+  public class Mutation : ObjectGraphType
   {
-    public BeveragesMutation(BeveragesServices beverages)
+    public Mutation(BeveragesServices beverages, KeywordsServices keywords)
     {
       FieldAsync<BeverageType>(
             "createBeverage",
@@ -31,6 +31,17 @@ namespace backend.Graphs.Mutations
               var beverage = await beverages.CreateBeverage(newBeverage);
               return beverage;
             }
+      );
+      FieldAsync<KeywordType>(
+        "createKeyword",
+        arguments: new QueryArguments(
+          new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "content" }
+        ),
+        resolve: async context =>
+        {
+          var keyword = await keywords.CreateKeyword(context.GetArgument<string>("content"));
+          return keyword;
+        }
       );
     }
   }

@@ -7,9 +7,9 @@ using GraphQL.Types;
 
 namespace backend.Graphs.Queries
 {
-  public class BeveragesQuery : ObjectGraphType
+  public class Query : ObjectGraphType
   {
-    public BeveragesQuery(BeveragesServices beverages)
+    public Query(BeveragesServices beverages)
     {
       FieldAsync<ListGraphType<BeverageType>>(
           "beverages",

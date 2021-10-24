@@ -1,0 +1,30 @@
+using System.Threading.Tasks;
+using backend.Models;
+using MongoDB.Driver;
+
+namespace backend.Services
+{
+  public class KeywordsServices
+  {
+    private readonly IMongoCollection<Keyword> _keywords;
+
+    public KeywordsServices(IMongoDbConfiguration configuration)
+    {
+
+      var client = new MongoClient(configuration.ConnectionString);
+      var database = client.GetDatabase(configuration.DatabaseName);
+      _keywords = database.GetCollection<Keyword>(configuration.KeywordsCollectionName);
+    }
+
+    public async Task<Keyword> CreateKeyword(string content)
+    {
+      var keyword = new Keyword
+      {
+        Id = null,
+        Content = content
+      };
+      await _keywords.InsertOneAsync(keyword);
+      return keyword;
+    }
+  }
+}

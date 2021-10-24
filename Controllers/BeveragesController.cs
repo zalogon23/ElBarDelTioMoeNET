@@ -16,17 +16,19 @@ namespace backend.Controllers
   public class BeveragesController : ControllerBase
   {
     private readonly BeveragesServices _beverages;
-    public BeveragesController(BeveragesServices beverages)
+    private readonly KeywordsServices _keywords;
+    public BeveragesController(BeveragesServices beverages, KeywordsServices keywords)
     {
       _beverages = beverages;
+      _keywords = keywords;
     }
     [HttpPost("graphql")]
     public async Task<IActionResult> GraphQL(GraphQLRequestDto graphQLRequestDto)
     {
       var schema = new Schema
       {
-        Query = new BeveragesQuery(_beverages),
-        Mutation = new BeveragesMutation(_beverages),
+        Query = new Query(_beverages),
+        Mutation = new Mutation(_beverages, _keywords),
       };
       var inputs = graphQLRequestDto.Variables.ToInputs();
       var json = await schema.ExecuteAsync(_ =>

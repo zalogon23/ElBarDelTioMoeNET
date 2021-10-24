@@ -36,6 +36,7 @@ namespace backend
         sp.GetRequiredService<IOptions<MongoDBConfiguration>>().Value);
 
       services.AddSingleton<BeveragesServices>();
+      services.AddSingleton<KeywordsServices>();
 
       services.AddControllers();
       services.AddSwaggerGen(c =>
