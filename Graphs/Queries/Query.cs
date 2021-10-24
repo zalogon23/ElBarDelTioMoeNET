@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using backend.Graphs.GraphTypes;
 using backend.Models;
 using backend.Services;
@@ -9,7 +10,7 @@ namespace backend.Graphs.Queries
 {
   public class Query : ObjectGraphType
   {
-    public Query(BeveragesServices beverages)
+    public Query(BeveragesServices beverages, ClassificationsServices classifications)
     {
       FieldAsync<ListGraphType<BeverageType>>(
           "beverages",
@@ -33,6 +34,25 @@ namespace backend.Graphs.Queries
             var beverage = await beverages.GetBeverage(context.GetArgument<string>("id"));
             return beverage;
           }
+      );
+      FieldAsync<ListGraphType<BeverageType>>(
+        "beveragesByKeyword",
+        arguments: new QueryArguments(
+          new QueryArgument<StringGraphType> { Name = "keywordId" }
+        ),
+        resolve: async context =>
+        {
+          var matchingClassifications = await classifications.GetClassificationsByKeyword(
+            context.GetArgument<string>("keywordId")
+          );
+          List<string> beverageIds = new List<string> { };
+          foreach (var classification in matchingClassifications)
+          {
+            beverageIds.Add(classification.BeverageId);
+          }
+          var classifiedBeverages = await beverages.GetBeveragesByIds(beverageIds);
+          return classifiedBeverages;
+        }
       );
     }
   }

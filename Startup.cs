@@ -37,6 +37,7 @@ namespace backend
 
       services.AddSingleton<BeveragesServices>();
       services.AddSingleton<KeywordsServices>();
+      services.AddSingleton<ClassificationsServices>();
 
       services.AddControllers();
       services.AddSwaggerGen(c =>

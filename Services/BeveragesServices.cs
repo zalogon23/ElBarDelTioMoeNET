@@ -21,6 +21,11 @@ namespace backend.Services
       var beverages = await _beverages.Find(x => true).ToListAsync();
       return beverages;
     }
+    public async Task<List<Beverage>> GetBeveragesByIds(List<string> ids)
+    {
+      var beverages = await _beverages.Find(x => ids.Contains(x.Id)).ToListAsync();
+      return beverages;
+    }
     public async Task<Beverage> GetBeverage(string id)
     {
       Console.WriteLine(id);
