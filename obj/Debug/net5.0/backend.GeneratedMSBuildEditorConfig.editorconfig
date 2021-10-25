@@ -7,4 +7,4 @@ build_property.PublishSingleFile =
 build_property.IncludeAllContentForSelfExtract = 
 build_property._SupportedPlatformList = Android,iOS,Linux,macOS,Windows
 build_property.RootNamespace = backend
-build_property.ProjectDir = F:\programando\2021-10-7-react-native\2-cocktails-app\backend\
+build_property.ProjectDir = f:\programando\2021-10-7-react-native\2-cocktails-app\backend\

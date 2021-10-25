@@ -30,5 +30,23 @@ namespace backend.Services
       var classifications = await _classifications.Find(x => x.KeywordId == keywordId).ToListAsync();
       return classifications;
     }
+    public async Task<bool> RemoveClassification(string keywordId, string beverageId)
+    {
+      var response = await _classifications.DeleteOneAsync(x => (x.KeywordId == keywordId && x.BeverageId == beverageId));
+      bool isDone = response.DeletedCount > 0;
+      return isDone;
+    }
+    public async Task<bool> RemoveClassificationsByKeyword(string keywordId)
+    {
+      var response = await _classifications.DeleteOneAsync(x => x.KeywordId == keywordId);
+      bool isDone = response.DeletedCount > 0;
+      return isDone;
+    }
+    public async Task<bool> RemoveClassificationsByBeverage(string beverageId)
+    {
+      var response = await _classifications.DeleteOneAsync(x => x.BeverageId == beverageId);
+      bool isDone = response.DeletedCount > 0;
+      return isDone;
+    }
   }
 }
