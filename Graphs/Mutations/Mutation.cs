@@ -33,6 +33,22 @@ namespace backend.Graphs.Mutations
           return beverage;
         }
       );
+      FieldAsync<BooleanGraphType>(
+        "removeBeverage",
+        arguments: new QueryArguments(
+          new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "beverageId" }
+        ),
+        resolve: async context =>
+        {
+          string beverageId = context.GetArgument<string>("beverageId");
+          bool isRemoved = await beverages.RemoveBeverage(beverageId);
+          if (isRemoved)
+          {
+            bool areRemovedClassification = await classifications.RemoveClassificationsByBeverage(beverageId);
+          }
+          return isRemoved;
+        }
+      );
       FieldAsync<KeywordType>(
         "createKeyword",
         arguments: new QueryArguments(

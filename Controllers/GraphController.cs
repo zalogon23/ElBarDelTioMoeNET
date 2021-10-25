@@ -13,12 +13,12 @@ namespace backend.Controllers
 {
   [ApiController]
   [Route("api")]
-  public class BeveragesController : ControllerBase
+  public class GraphController : ControllerBase
   {
     private readonly BeveragesServices _beverages;
     private readonly KeywordsServices _keywords;
     private readonly ClassificationsServices _classifications;
-    public BeveragesController(BeveragesServices beverages, KeywordsServices keywords, ClassificationsServices classifications)
+    public GraphController(BeveragesServices beverages, KeywordsServices keywords, ClassificationsServices classifications)
     {
       _beverages = beverages;
       _keywords = keywords;

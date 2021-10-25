@@ -28,7 +28,6 @@ namespace backend.Services
     }
     public async Task<Beverage> GetBeverage(string id)
     {
-      Console.WriteLine(id);
       var beverage = await _beverages.Find(bev => bev.Id == id).FirstOrDefaultAsync();
       return beverage;
     }
@@ -37,6 +36,12 @@ namespace backend.Services
       await _beverages.InsertOneAsync(beverage);
       Console.WriteLine(beverage.Id);
       return beverage;
+    }
+    public async Task<bool> RemoveBeverage(string beverageId)
+    {
+      var response = await _beverages.DeleteOneAsync(x => x.Id == beverageId);
+      bool isDone = response.DeletedCount > 0;
+      return isDone;
     }
   }
 }
