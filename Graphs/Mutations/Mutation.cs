@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using backend.Graphs.GraphTypes;
 using backend.Models;
+using backend.Models.Inputs;
 using backend.Services;
 using GraphQL;
 using GraphQL.Types;
@@ -11,7 +12,12 @@ namespace backend.Graphs.Mutations
 {
   public class Mutation : ObjectGraphType
   {
-    public Mutation(BeveragesServices beverages, KeywordsServices keywords, ClassificationsServices classifications)
+    public Mutation(
+      BeveragesServices beverages,
+       KeywordsServices keywords,
+       ClassificationsServices classifications,
+       UsersServices users
+       )
     {
       FieldAsync<BeverageType>(
         "createBeverage",
@@ -72,6 +78,26 @@ namespace backend.Graphs.Mutations
           string keywordId = context.GetArgument<string>("keywordId");
           var classification = await classifications.CreateClassification(beverageId: beverageId, keywordId: keywordId);
           return classification;
+        }
+      );
+      FieldAsync<UserType>(
+        "createUser",
+        arguments: new QueryArguments(
+          new QueryArgument<NonNullGraphType<UserInputType>> { Name = "user" }
+        ),
+        resolve: async context =>
+        {
+          var argumentUser = context.GetArgument<User>("user");
+          var user = new User
+          {
+            Id = null,
+            Username = argumentUser.Username,
+            Password = argumentUser.Password,
+            Description = argumentUser.Description,
+            Avatar = argumentUser.Avatar
+          };
+          var createdUser = await users.CreateUser(user);
+          return createdUser;
         }
       );
     }

@@ -3,6 +3,7 @@ namespace backend.Models
   public class MongoDBConfiguration : IMongoDbConfiguration
   {
     public string BeveragesCollectionName { get; set; }
+    public string UsersCollectionName { get; set; }
     public string KeywordsCollectionName { get; set; }
     public string ClassificationsCollectionName { get; set; }
     public string ConnectionString { get; set; }
@@ -12,6 +13,7 @@ namespace backend.Models
   public interface IMongoDbConfiguration
   {
     string BeveragesCollectionName { get; set; }
+    string UsersCollectionName { get; set; }
     string KeywordsCollectionName { get; set; }
     string ClassificationsCollectionName { get; set; }
     string ConnectionString { get; set; }

@@ -16,10 +16,17 @@ namespace backend.Controllers
   public class GraphController : ControllerBase
   {
     private readonly BeveragesServices _beverages;
+    private readonly UsersServices _users;
     private readonly KeywordsServices _keywords;
     private readonly ClassificationsServices _classifications;
-    public GraphController(BeveragesServices beverages, KeywordsServices keywords, ClassificationsServices classifications)
+    public GraphController(
+      BeveragesServices beverages,
+      KeywordsServices keywords,
+      ClassificationsServices classifications,
+      UsersServices users
+      )
     {
+      _users = users;
       _beverages = beverages;
       _keywords = keywords;
       _classifications = classifications;
@@ -29,8 +36,16 @@ namespace backend.Controllers
     {
       var schema = new Schema
       {
-        Query = new Query(beverages: _beverages, classifications: _classifications),
-        Mutation = new Mutation(beverages: _beverages, keywords: _keywords, classifications: _classifications),
+        Query = new Query(
+          beverages: _beverages,
+          classifications: _classifications
+          ),
+        Mutation = new Mutation(
+          beverages: _beverages,
+          keywords: _keywords,
+          classifications: _classifications,
+          users: _users
+          )
       };
       var inputs = graphQLRequestDto.Variables.ToInputs();
       var json = await schema.ExecuteAsync(_ =>
