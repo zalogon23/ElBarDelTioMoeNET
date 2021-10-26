@@ -38,7 +38,8 @@ namespace backend.Controllers
       {
         Query = new Query(
           beverages: _beverages,
-          classifications: _classifications
+          classifications: _classifications,
+          users: _users
           ),
         Mutation = new Mutation(
           beverages: _beverages,

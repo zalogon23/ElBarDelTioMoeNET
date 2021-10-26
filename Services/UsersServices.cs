@@ -18,5 +18,15 @@ namespace backend.Services
       await _users.InsertOneAsync(user);
       return user;
     }
+    public async Task<User> GetUserById(string id)
+    {
+      var user = await _users.Find(x => x.Id == id).FirstOrDefaultAsync();
+      return user;
+    }
+    public async Task<User> GetUserByLogin(string username, string password)
+    {
+      var user = await _users.Find(x => (x.Username == username && x.Password == password)).FirstOrDefaultAsync();
+      return user;
+    }
   }
 }

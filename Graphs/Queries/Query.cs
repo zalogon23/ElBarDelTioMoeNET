@@ -10,8 +10,32 @@ namespace backend.Graphs.Queries
 {
   public class Query : ObjectGraphType
   {
-    public Query(BeveragesServices beverages, ClassificationsServices classifications)
+    public Query(BeveragesServices beverages, ClassificationsServices classifications, UsersServices users)
     {
+      FieldAsync<UserType>(
+        "user",
+        arguments: new QueryArguments(
+          new QueryArgument<StringGraphType> { Name = "id" },
+          new QueryArgument<StringGraphType> { Name = "username" },
+          new QueryArgument<StringGraphType> { Name = "password" }
+        ),
+        resolve: async context =>
+        {
+          string userId = context.GetArgument<string>("id");
+          if (userId != null)
+          {
+            var user = await users.GetUserById(userId);
+            return user;
+          }
+          else
+          {
+            string username = context.GetArgument<string>("username");
+            string password = context.GetArgument<string>("password");
+            var user = await users.GetUserByLogin(username: username, password: password);
+            return user;
+          }
+        }
+      );
       FieldAsync<ListGraphType<BeverageType>>(
           "beverages",
           resolve: async context =>
