@@ -55,9 +55,13 @@ namespace backend
 
       services.Configure<MongoDBConfiguration>(
         Configuration.GetSection(nameof(MongoDBConfiguration)));
+      services.Configure<JWTConfiguration>(
+              Configuration.GetSection(nameof(JWTConfiguration)));
 
       services.AddSingleton<IMongoDbConfiguration>(sp =>
         sp.GetRequiredService<IOptions<MongoDBConfiguration>>().Value);
+      services.AddSingleton<IJWTConfiguration>(sp =>
+        sp.GetRequiredService<IOptions<JWTConfiguration>>().Value);
 
       services.AddSingleton<BeveragesServices>();
       services.AddSingleton<KeywordsServices>();
