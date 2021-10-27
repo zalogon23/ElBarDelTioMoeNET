@@ -27,5 +27,10 @@ namespace backend.Services
 
       return tokenHandler.WriteToken(createdToken);
     }
+    public static string CreateRandomToken(string secret)
+    {
+      string randomToken = CreateToken(secret: secret, userId: "randomstuff");
+      return randomToken;
+    }
   }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using backend.Dtos;
 using backend.Graphs.GraphTypes;
 using backend.Models;
 using backend.Services;
@@ -10,30 +11,50 @@ namespace backend.Graphs.Queries
 {
   public class Query : ObjectGraphType
   {
-    public Query(BeveragesServices beverages, ClassificationsServices classifications, UsersServices users)
+    public Query(
+      BeveragesServices beverages,
+      ClassificationsServices classifications,
+      UsersServices users,
+      IJWTConfiguration jwtconfiguration
+      )
     {
       FieldAsync<UserType>(
         "user",
         arguments: new QueryArguments(
-          new QueryArgument<StringGraphType> { Name = "id" },
+          new QueryArgument<StringGraphType> { Name = "id" }
+        ),
+        resolve: async context =>
+        {
+          string userId = context.GetArgument<string>("id");
+          var user = await users.GetUserById(userId);
+          return user;
+
+        }
+      );
+      FieldAsync<LoggedUserDtoType>(
+        "login",
+        arguments: new QueryArguments(
           new QueryArgument<StringGraphType> { Name = "username" },
           new QueryArgument<StringGraphType> { Name = "password" }
         ),
         resolve: async context =>
         {
-          string userId = context.GetArgument<string>("id");
-          if (userId != null)
+          string username = context.GetArgument<string>("username");
+          string password = context.GetArgument<string>("password");
+          var user = await users.GetUserByLogin(username: username, password: password);
+          string token = TokenHandler.CreateToken(secret: jwtconfiguration.SecretKey, userId: user.Id);
+          string refreshToken = TokenHandler.CreateRandomToken(secret: jwtconfiguration.SecretKey);
+          var loggedUserDto = new LoggedUserDto()
           {
-            var user = await users.GetUserById(userId);
-            return user;
-          }
-          else
-          {
-            string username = context.GetArgument<string>("username");
-            string password = context.GetArgument<string>("password");
-            var user = await users.GetUserByLogin(username: username, password: password);
-            return user;
-          }
+            Id = user.Id,
+            Username = user.Username,
+            Password = user.Password,
+            Description = user.Description,
+            Avatar = user.Avatar,
+            Token = token,
+            RefreshToken = refreshToken
+          };
+          return loggedUserDto;
         }
       );
       FieldAsync<ListGraphType<BeverageType>>(

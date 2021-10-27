@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using backend.Dtos;
 using backend.Graphs.Mutations;
 using backend.Graphs.Queries;
+using backend.Models;
 using backend.Services;
 using GraphQL;
 using GraphQL.SystemTextJson;
@@ -15,6 +16,7 @@ namespace backend.Controllers
   [Route("api")]
   public class GraphController : ControllerBase
   {
+    private readonly IJWTConfiguration _configuration;
     private readonly BeveragesServices _beverages;
     private readonly UsersServices _users;
     private readonly KeywordsServices _keywords;
@@ -23,13 +25,15 @@ namespace backend.Controllers
       BeveragesServices beverages,
       KeywordsServices keywords,
       ClassificationsServices classifications,
-      UsersServices users
+      UsersServices users,
+      IJWTConfiguration configuration
       )
     {
       _users = users;
       _beverages = beverages;
       _keywords = keywords;
       _classifications = classifications;
+      _configuration = configuration;
     }
     [HttpPost("graphql")]
     public async Task<IActionResult> GraphQL(GraphQLRequestDto graphQLRequestDto)
@@ -39,7 +43,8 @@ namespace backend.Controllers
         Query = new Query(
           beverages: _beverages,
           classifications: _classifications,
-          users: _users
+          users: _users,
+          jwtconfiguration: _configuration
           ),
         Mutation = new Mutation(
           beverages: _beverages,
