@@ -1,4 +1,5 @@
 using System;
+using System.Web;
 using System.Threading.Tasks;
 using backend.Dtos;
 using backend.Graphs.Mutations;
@@ -9,6 +10,7 @@ using GraphQL;
 using GraphQL.SystemTextJson;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace backend.Controllers
 {
@@ -34,6 +36,7 @@ namespace backend.Controllers
       _keywords = keywords;
       _classifications = classifications;
       _configuration = configuration;
+
     }
     [HttpPost("graphql")]
     public async Task<IActionResult> GraphQL(GraphQLRequestDto graphQLRequestDto)
@@ -68,6 +71,33 @@ namespace backend.Controllers
       {
         return Ok(json);
       }
+    }
+    [HttpPost("login")]
+    public async Task<ActionResult<LoggedUserDto>> Login(LoginDto login)
+    {
+      string username = login.Username;
+      string password = login.Password;
+      var user = await _users.GetUserByLogin(username: username, password: password);
+      if (user is null)
+      {
+        return BadRequest();
+      }
+      string token = TokenHandler.CreateToken(secret: _configuration.SecretKey, userId: user.Id);
+      string refreshToken = TokenHandler.CreateRandomToken(secret: _configuration.SecretKey);
+      CookieOptions options = new CookieOptions();
+      options.Expires = DateTime.Now.AddDays(7);
+      options.HttpOnly = true;
+      HttpContext.Response.Cookies.Append("refresh-token", refreshToken, options);
+      var loggedUserDto = new LoggedUserDto()
+      {
+        Id = user.Id,
+        Username = user.Username,
+        Password = user.Password,
+        Description = user.Description,
+        Avatar = user.Avatar,
+        Token = token,
+      };
+      return Ok(loggedUserDto);
     }
   }
 }

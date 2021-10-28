@@ -31,32 +31,6 @@ namespace backend.Graphs.Queries
 
         }
       );
-      FieldAsync<LoggedUserDtoType>(
-        "login",
-        arguments: new QueryArguments(
-          new QueryArgument<StringGraphType> { Name = "username" },
-          new QueryArgument<StringGraphType> { Name = "password" }
-        ),
-        resolve: async context =>
-        {
-          string username = context.GetArgument<string>("username");
-          string password = context.GetArgument<string>("password");
-          var user = await users.GetUserByLogin(username: username, password: password);
-          string token = TokenHandler.CreateToken(secret: jwtconfiguration.SecretKey, userId: user.Id);
-          string refreshToken = TokenHandler.CreateRandomToken(secret: jwtconfiguration.SecretKey);
-          var loggedUserDto = new LoggedUserDto()
-          {
-            Id = user.Id,
-            Username = user.Username,
-            Password = user.Password,
-            Description = user.Description,
-            Avatar = user.Avatar,
-            Token = token,
-            RefreshToken = refreshToken
-          };
-          return loggedUserDto;
-        }
-      );
       FieldAsync<ListGraphType<BeverageType>>(
           "beverages",
           resolve: async context =>
