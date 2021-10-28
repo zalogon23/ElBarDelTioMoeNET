@@ -42,3 +42,10 @@ F:\programando\2021-10-7-react-native\2-cocktails-app\backend\bin\Debug\net5.0\r
 F:\programando\2021-10-7-react-native\2-cocktails-app\backend\bin\Debug\net5.0\runtimes\linux\native\libmongocrypt.so
 F:\programando\2021-10-7-react-native\2-cocktails-app\backend\bin\Debug\net5.0\runtimes\osx\native\libmongocrypt.dylib
 F:\programando\2021-10-7-react-native\2-cocktails-app\backend\bin\Debug\net5.0\runtimes\win\native\mongocrypt.dll
+F:\programando\2021-10-7-react-native\2-cocktails-app\backend\bin\Debug\net5.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+F:\programando\2021-10-7-react-native\2-cocktails-app\backend\bin\Debug\net5.0\Microsoft.IdentityModel.JsonWebTokens.dll
+F:\programando\2021-10-7-react-native\2-cocktails-app\backend\bin\Debug\net5.0\Microsoft.IdentityModel.Logging.dll
+F:\programando\2021-10-7-react-native\2-cocktails-app\backend\bin\Debug\net5.0\Microsoft.IdentityModel.Protocols.dll
+F:\programando\2021-10-7-react-native\2-cocktails-app\backend\bin\Debug\net5.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+F:\programando\2021-10-7-react-native\2-cocktails-app\backend\bin\Debug\net5.0\Microsoft.IdentityModel.Tokens.dll
+F:\programando\2021-10-7-react-native\2-cocktails-app\backend\bin\Debug\net5.0\System.IdentityModel.Tokens.Jwt.dll
