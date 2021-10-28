@@ -11,6 +11,7 @@ using GraphQL.SystemTextJson;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace backend.Controllers
 {
@@ -114,6 +115,39 @@ namespace backend.Controllers
         Token = token,
       };
       return Ok(loggedUserDto);
+    }
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh()
+    {
+      var previousRefreshToken = HttpContext.Request.Cookies["refresh-token"];
+      if (previousRefreshToken is null || previousRefreshToken.Length == 0)
+      {
+        return Unauthorized();
+      }
+
+      var oldRefreshToken = await _refreshTokens.IsValid(previousRefreshToken);
+      if (oldRefreshToken is null)
+      {
+        return Unauthorized();
+      }
+
+      string userId = oldRefreshToken.User;
+
+      var refreshToken = new RefreshToken
+      {
+        Id = null,
+        Hash = TokenHandler.CreateRandomToken(_configuration.SecretKey),
+        User = userId,
+        Valid = true,
+        Expires = DateTime.UtcNow.AddDays(7)
+      };
+
+      string newToken = TokenHandler.CreateToken(secret: _configuration.SecretKey, userId: userId);
+
+      await _refreshTokens.InsertRefreshToken(refreshToken);
+      HttpContext.Response.Cookies.Append("refresh-token", refreshToken.Hash);
+
+      return Ok(newToken);
     }
   }
 }

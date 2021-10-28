@@ -30,5 +30,14 @@ namespace backend.Services
           x => (x.User == userId),
           update);
     }
+    public async Task<RefreshToken> IsValid(string refreshToken)
+    {
+      var foundRefreshToken = await (await _refreshTokens.FindAsync(x => x.Hash == refreshToken)).FirstAsync<RefreshToken>();
+      if (foundRefreshToken != null)
+      {
+        await InvalidAllRefreshTokens(foundRefreshToken.User);
+      }
+      return foundRefreshToken;
+    }
   }
 }
