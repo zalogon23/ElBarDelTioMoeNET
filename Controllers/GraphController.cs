@@ -22,12 +22,14 @@ namespace backend.Controllers
     private readonly BeveragesServices _beverages;
     private readonly UsersServices _users;
     private readonly KeywordsServices _keywords;
+    private readonly RefreshTokensServices _refreshTokens;
     private readonly ClassificationsServices _classifications;
     public GraphController(
       BeveragesServices beverages,
       KeywordsServices keywords,
       ClassificationsServices classifications,
       UsersServices users,
+      RefreshTokensServices refreshTokens,
       IJWTConfiguration configuration
       )
     {
@@ -36,6 +38,7 @@ namespace backend.Controllers
       _keywords = keywords;
       _classifications = classifications;
       _configuration = configuration;
+      _refreshTokens = refreshTokens;
 
     }
     [HttpPost("graphql")]
@@ -84,10 +87,23 @@ namespace backend.Controllers
       }
       string token = TokenHandler.CreateToken(secret: _configuration.SecretKey, userId: user.Id);
       string refreshToken = TokenHandler.CreateRandomToken(secret: _configuration.SecretKey);
+
+      RefreshToken refreshTokenInstance = new RefreshToken()
+      {
+        Hash = refreshToken,
+        User = user.Id,
+        Valid = true,
+        Expires = DateTime.UtcNow.AddDays(7)
+      };
+
+      await _refreshTokens.InvalidAllRefreshTokens(user.Id);
+      await _refreshTokens.InsertRefreshToken(refreshTokenInstance);
+
       CookieOptions options = new CookieOptions();
       options.Expires = DateTime.Now.AddDays(7);
       options.HttpOnly = true;
       HttpContext.Response.Cookies.Append("refresh-token", refreshToken, options);
+
       var loggedUserDto = new LoggedUserDto()
       {
         Id = user.Id,

@@ -67,6 +67,7 @@ namespace backend
       services.AddSingleton<KeywordsServices>();
       services.AddSingleton<ClassificationsServices>();
       services.AddSingleton<UsersServices>();
+      services.AddSingleton<RefreshTokensServices>();
 
       services.AddControllers();
       services.AddSwaggerGen(c =>
