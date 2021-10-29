@@ -88,11 +88,12 @@ namespace backend.Graphs.Mutations
         resolve: async context =>
         {
           var argumentUser = context.GetArgument<User>("user");
+          string hashedPassword = SaltHandler.GetHash(argumentUser.Password);
           var user = new User
           {
             Id = null,
             Username = argumentUser.Username,
-            Password = argumentUser.Password,
+            Password = hashedPassword,
             Description = argumentUser.Description,
             Avatar = argumentUser.Avatar
           };
