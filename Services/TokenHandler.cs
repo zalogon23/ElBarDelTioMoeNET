@@ -3,6 +3,7 @@ using System.Text;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
 
 namespace backend.Services
 {
@@ -29,7 +30,14 @@ namespace backend.Services
     }
     public static string CreateRandomToken(string secret)
     {
-      string randomToken = CreateToken(secret: secret, userId: "randomstuff");
+      var randomNumber = new byte[32];
+      string randomString;
+      using (var rng = RandomNumberGenerator.Create())
+      {
+        rng.GetBytes(randomNumber);
+        randomString = Convert.ToBase64String(randomNumber);
+      }
+      string randomToken = CreateToken(secret: secret, userId: randomString);
       return randomToken;
     }
   }
