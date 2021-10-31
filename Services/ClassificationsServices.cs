@@ -25,6 +25,11 @@ namespace backend.Services
       await _classifications.InsertOneAsync(classification);
       return classification;
     }
+    public async Task<List<Classification>> GetClassifications()
+    {
+      var classifications = await _classifications.Find(x => true).ToListAsync();
+      return classifications;
+    }
     public async Task<List<Classification>> GetClassificationsByKeyword(string keywordId)
     {
       var classifications = await _classifications.Find(x => x.KeywordId == keywordId).ToListAsync();
