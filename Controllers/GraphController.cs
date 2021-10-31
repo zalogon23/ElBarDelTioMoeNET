@@ -20,45 +20,31 @@ namespace backend.Controllers
   public class GraphController : ControllerBase
   {
     private readonly IJWTConfiguration _configuration;
-    private readonly BeveragesServices _beverages;
     private readonly UsersServices _users;
-    private readonly KeywordsServices _keywords;
     private readonly RefreshTokensServices _refreshTokens;
-    private readonly ClassificationsServices _classifications;
+    private readonly Query _query;
+    private readonly Mutation _mutation;
     public GraphController(
-      BeveragesServices beverages,
-      KeywordsServices keywords,
-      ClassificationsServices classifications,
       UsersServices users,
       RefreshTokensServices refreshTokens,
-      IJWTConfiguration configuration
+      IJWTConfiguration configuration,
+      Query query,
+      Mutation mutation
       )
     {
       _users = users;
-      _beverages = beverages;
-      _keywords = keywords;
-      _classifications = classifications;
-      _configuration = configuration;
       _refreshTokens = refreshTokens;
-
+      _configuration = configuration;
+      _mutation = mutation;
+      _query = query;
     }
     [HttpPost("graphql")]
     public async Task<IActionResult> GraphQL(GraphQLRequestDto graphQLRequestDto)
     {
       var schema = new Schema
       {
-        Query = new Query(
-          beverages: _beverages,
-          classifications: _classifications,
-          users: _users,
-          jwtconfiguration: _configuration
-          ),
-        Mutation = new Mutation(
-          beverages: _beverages,
-          keywords: _keywords,
-          classifications: _classifications,
-          users: _users
-          )
+        Query = _query,
+        Mutation = _mutation
       };
       var inputs = graphQLRequestDto.Variables.ToInputs();
       var json = await schema.ExecuteAsync(_ =>

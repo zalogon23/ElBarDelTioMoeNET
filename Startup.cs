@@ -17,6 +17,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
+using backend.Graphs.Queries;
+using backend.Graphs.Mutations;
 
 namespace backend
 {
@@ -68,6 +70,9 @@ namespace backend
       services.AddSingleton<ClassificationsServices>();
       services.AddSingleton<UsersServices>();
       services.AddSingleton<RefreshTokensServices>();
+
+      services.AddScoped<Query>();
+      services.AddScoped<Mutation>();
 
       services.AddControllers();
       services.AddSwaggerGen(c =>
