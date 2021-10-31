@@ -27,6 +27,8 @@ namespace backend.Graphs.Queries
         {
           string userId = context.GetArgument<string>("id");
           var user = await users.GetUserById(userId);
+          //Hide password
+          user.Password = "No hay nada que ver aca";
           return user;
 
         }

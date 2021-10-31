@@ -98,6 +98,8 @@ namespace backend.Graphs.Mutations
             Avatar = argumentUser.Avatar
           };
           var createdUser = await users.CreateUser(user);
+          //Hide password
+          createdUser.Password = "No hay nada que ver aca";
           return createdUser;
         }
       );
