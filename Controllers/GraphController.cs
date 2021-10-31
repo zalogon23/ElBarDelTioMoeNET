@@ -95,7 +95,7 @@ namespace backend.Controllers
       {
         Id = user.Id,
         Username = user.Username,
-        Password = user.Password,
+        Password = "No hay nada que ver aca",
         Description = user.Description,
         Avatar = user.Avatar,
         Token = token,
