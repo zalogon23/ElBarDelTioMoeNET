@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using GraphQL;
 
 namespace backend.Dtos
@@ -7,6 +8,6 @@ namespace backend.Dtos
   {
     [Required]
     public string Query { get; set; }
-    public string Variables { get; set; }
+    public JsonElement Variables { get; set; }
   }
 }
