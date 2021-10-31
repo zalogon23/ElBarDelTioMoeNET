@@ -15,6 +15,7 @@ namespace backend.Graphs.Queries
       BeveragesServices beverages,
       ClassificationsServices classifications,
       UsersServices users,
+      KeywordsServices keywords,
       IJWTConfiguration jwtconfiguration
       )
     {
@@ -55,6 +56,14 @@ namespace backend.Graphs.Queries
             var beverage = await beverages.GetBeverage(context.GetArgument<string>("id"));
             return beverage;
           }
+      );
+      FieldAsync<ListGraphType<KeywordType>>(
+        "keywords",
+        resolve: async context =>
+        {
+          var keywordsFound = await keywords.GetKeywords();
+          return keywordsFound;
+        }
       );
       FieldAsync<ListGraphType<BeverageType>>(
         "beveragesByKeyword",

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using backend.Models;
 using MongoDB.Driver;
@@ -25,6 +26,11 @@ namespace backend.Services
       };
       await _keywords.InsertOneAsync(keyword);
       return keyword;
+    }
+    public async Task<List<Keyword>> GetKeywords()
+    {
+      var keywords = await _keywords.Find(x => true).ToListAsync();
+      return keywords;
     }
   }
 }
