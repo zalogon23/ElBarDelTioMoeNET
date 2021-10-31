@@ -42,6 +42,14 @@ namespace backend.Graphs.Queries
             return allBeverages;
           }
       );
+      FieldAsync<ListGraphType<ClassificationType>>(
+          "classifications",
+          resolve: async context =>
+          {
+            var allClassifications = await classifications.GetClassifications();
+            return allClassifications;
+          }
+      );
       FieldAsync<BeverageType>(
           "beverage",
           arguments: new QueryArguments(

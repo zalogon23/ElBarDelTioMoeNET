@@ -41,7 +41,6 @@ namespace backend.Controllers
     [HttpPost("graphql")]
     public async Task<IActionResult> GraphQL(GraphQLRequestDto graphQLRequestDto)
     {
-      Console.WriteLine(graphQLRequestDto.Variables);
       var schema = new Schema
       {
         Query = _query,

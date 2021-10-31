@@ -34,7 +34,6 @@ namespace backend.Services
     public async Task<Beverage> CreateBeverage(Beverage beverage)
     {
       await _beverages.InsertOneAsync(beverage);
-      Console.WriteLine(beverage.Id);
       return beverage;
     }
     public async Task<bool> RemoveBeverage(string beverageId)
