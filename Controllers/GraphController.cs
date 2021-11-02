@@ -12,6 +12,7 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using System.Collections.Generic;
 
 namespace backend.Controllers
 {
@@ -41,16 +42,34 @@ namespace backend.Controllers
     [HttpPost("graphql")]
     public async Task<IActionResult> GraphQL(GraphQLRequestDto graphQLRequestDto)
     {
+      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+      var user = new Dictionary<string, object>();
+      if (identity != null)
+      {
+        var id = identity?.FindFirst("userId")?.Value;
+        if (id != null)
+        {
+
+          var result = await _users.GetUserById(id);
+          user.Add("current", result);
+        }
+        else
+        {
+          user.Add("current", null);
+        }
+      }
       var schema = new Schema
       {
         Query = _query,
-        Mutation = _mutation
+        Mutation = _mutation,
+
       };
       var inputs = graphQLRequestDto.Variables.ToInputs();
       var json = await schema.ExecuteAsync(_ =>
       {
         _.Query = graphQLRequestDto.Query;
         _.Inputs = inputs;
+        _.UserContext = user;
       });
 
       if (json is null)

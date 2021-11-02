@@ -14,7 +14,7 @@ namespace backend.Services
       var key = Encoding.ASCII.GetBytes(secret);
 
       var claims = new[]{
-                new Claim(ClaimTypes.NameIdentifier, userId)
+                new Claim("userId", userId)
             };
       var claimsIdentity = new ClaimsIdentity(claims);
       var tokenDescriptor = new SecurityTokenDescriptor

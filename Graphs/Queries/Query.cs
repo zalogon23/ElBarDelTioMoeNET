@@ -19,6 +19,32 @@ namespace backend.Graphs.Queries
       IJWTConfiguration jwtconfiguration
       )
     {
+      Field<UserType>(
+        "self",
+        resolve: context =>
+        {
+          var userContext = context.UserContext;
+          if (userContext is null)
+          {
+            return null;
+          }
+          object result;
+          userContext.TryGetValue("current", out result);
+          if (result is null)
+          {
+            return null;
+          }
+          User user = (User)result;
+          return new User
+          {
+            Id = user.Id,
+            Username = user.Username,
+            Description = user.Description,
+            Password = "No hay nada que ver aca",
+            Avatar = user.Avatar
+          };
+        }
+      );
       FieldAsync<UserType>(
         "user",
         arguments: new QueryArguments(
