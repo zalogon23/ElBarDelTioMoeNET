@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -12,5 +13,11 @@ namespace backend.Models
     public string Description { get; set; }
     public string Image { get; set; }
     public bool Native { get; set; }
+  }
+
+  public class BeverageGraph : Beverage
+  {
+    public List<Ingredient> Ingredients { get; set; }
+    public List<Keyword> Keywords { get; set; }
   }
 }

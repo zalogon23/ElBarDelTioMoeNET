@@ -42,5 +42,74 @@ namespace backend.Services
       bool isDone = response.DeletedCount > 0;
       return isDone;
     }
+
+    public BeverageGraph ConvertToGraphBeverage(
+      Beverage beverage,
+      List<Keyword> keywords,
+      List<Ingredient> ingredients,
+      List<Classification> classifications
+    )
+    {
+      var completeBeverage = new BeverageGraph
+      {
+        Id = beverage.Id,
+        Name = beverage.Name,
+        Description = beverage.Description,
+        Image = beverage.Image,
+        Native = beverage.Native,
+        Keywords = new List<Keyword>(),
+        Ingredients = new List<Ingredient>()
+      };
+      foreach (var classification in classifications)
+      {
+        var keyword = keywords.Find(x => x.Id == classification.KeywordId);
+        if (keyword is null) continue;
+        completeBeverage.Keywords.Add(keyword);
+      }
+      foreach (var ingredient in ingredients)
+      {
+        completeBeverage.Ingredients.Add(ingredient);
+      }
+      return completeBeverage;
+    }
+
+    public List<BeverageGraph> ConvertToGraphBeverages(
+      List<Beverage> beverages,
+      List<Keyword> keywords,
+      List<Ingredient> ingredients,
+      List<Classification> classifications
+    )
+    {
+      var completeBeverages = new List<BeverageGraph>();
+      foreach (var beverage in beverages)
+      {
+        completeBeverages.Add(
+          new BeverageGraph
+          {
+            Id = beverage.Id,
+            Name = beverage.Name,
+            Description = beverage.Description,
+            Image = beverage.Image,
+            Native = beverage.Native,
+            Keywords = new List<Keyword>(),
+            Ingredients = new List<Ingredient>()
+          }
+        );
+      }
+      foreach (var classification in classifications)
+      {
+        var beverage = completeBeverages.Find(x => x.Id == classification.BeverageId);
+        var keyword = keywords.Find(x => x.Id == classification.KeywordId);
+        if (beverage is null || keyword is null) continue;
+        beverage.Keywords.Add(keyword);
+      }
+      foreach (var ingredient in ingredients)
+      {
+        var beverage = completeBeverages.Find(x => x.Id == ingredient.BeverageId);
+        if (beverage is null) continue;
+        beverage.Ingredients.Add(ingredient);
+      }
+      return completeBeverages;
+    }
   }
 }

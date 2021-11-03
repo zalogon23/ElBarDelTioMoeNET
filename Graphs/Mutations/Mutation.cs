@@ -37,7 +37,13 @@ namespace backend.Graphs.Mutations
             Native = argumentBeverage.Native
           };
           var beverage = await beverages.CreateBeverage(newBeverage);
-          return beverage;
+          var completeBeverage = beverages.ConvertToGraphBeverage(
+            beverage: beverage,
+            keywords: new List<Keyword>(),
+            ingredients: new List<Ingredient>(),
+            classifications: new List<Classification>()
+          );
+          return completeBeverage;
         }
       );
       FieldAsync<BooleanGraphType>(

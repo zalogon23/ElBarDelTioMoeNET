@@ -16,6 +16,7 @@ namespace backend.Graphs.Queries
       ClassificationsServices classifications,
       UsersServices users,
       KeywordsServices keywords,
+      IngredientsServices ingredients,
       IJWTConfiguration jwtconfiguration
       )
     {
@@ -65,7 +66,17 @@ namespace backend.Graphs.Queries
           resolve: async context =>
           {
             var allBeverages = await beverages.GetBeverages();
-            return allBeverages;
+            var allKeywords = await keywords.GetKeywords();
+            var allIngredients = await ingredients.GetIngredients();
+            var allClassifications = await classifications.GetClassifications();
+            var completeBeverages = new List<BeverageGraph>();
+
+            return beverages.ConvertToGraphBeverages(
+              beverages: allBeverages,
+              keywords: allKeywords,
+              ingredients: allIngredients,
+              classifications: allClassifications
+            );
           }
       );
       FieldAsync<ListGraphType<ClassificationType>>(
@@ -88,7 +99,15 @@ namespace backend.Graphs.Queries
           resolve: async context =>
           {
             var beverage = await beverages.GetBeverage(context.GetArgument<string>("id"));
-            return beverage;
+            var allIngredients = await ingredients.GetByBeverageId(beverage.Id);
+            var allKeywords = await keywords.GetKeywords();
+            var allClassifications = await classifications.GetClassifications();
+            return beverages.ConvertToGraphBeverage(
+              beverage: beverage,
+              ingredients: allIngredients,
+              keywords: allKeywords,
+              classifications: allClassifications
+            );
           }
       );
       FieldAsync<ListGraphType<KeywordType>>(

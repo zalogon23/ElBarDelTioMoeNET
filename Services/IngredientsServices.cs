@@ -16,7 +16,7 @@ namespace backend.Services
       _ingredients = database.GetCollection<Ingredient>(configuration.IngredientsCollectionName);
     }
 
-    public async Task<List<Ingredient>> GetAll()
+    public async Task<List<Ingredient>> GetIngredients()
     {
       return await _ingredients.Find(x => true).ToListAsync();
     }
