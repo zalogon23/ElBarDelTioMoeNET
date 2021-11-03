@@ -16,7 +16,8 @@ namespace backend.Graphs.Mutations
       BeveragesServices beverages,
        KeywordsServices keywords,
        ClassificationsServices classifications,
-       UsersServices users
+       UsersServices users,
+       IngredientsServices ingredients
        )
     {
       FieldAsync<BeverageType>(
@@ -101,6 +102,23 @@ namespace backend.Graphs.Mutations
           //Hide password
           createdUser.Password = "No hay nada que ver aca";
           return createdUser;
+        }
+      );
+      FieldAsync<ListGraphType<IngredientType>>(
+        "createIngredients",
+        arguments: new QueryArguments(
+          new QueryArgument<NonNullGraphType<ListGraphType<IngredientInputType>>> { Name = "ingredients" }
+        ),
+        resolve: async context =>
+        {
+          var passedIngredients = context.GetArgument<List<Ingredient>>("ingredients");
+          if (passedIngredients[0] is null)
+          {
+            return null;
+          }
+          await ingredients.RemoveIngredientsByBeverageId(passedIngredients[0].BeverageId);
+          var createdIngredients = await ingredients.CreateIngredients(passedIngredients);
+          return createdIngredients;
         }
       );
     }
