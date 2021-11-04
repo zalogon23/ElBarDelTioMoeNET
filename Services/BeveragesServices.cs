@@ -47,7 +47,8 @@ namespace backend.Services
       Beverage beverage,
       List<Keyword> keywords,
       List<Ingredient> ingredients,
-      List<Classification> classifications
+      List<Classification> classifications,
+      List<Instruction> instructions
     )
     {
       var completeBeverage = new BeverageGraph
@@ -58,7 +59,8 @@ namespace backend.Services
         Image = beverage.Image,
         Native = beverage.Native,
         Keywords = new List<Keyword>(),
-        Ingredients = new List<Ingredient>()
+        Ingredients = new List<Ingredient>(),
+        Instructions = new List<Instruction>()
       };
       foreach (var classification in classifications)
       {
@@ -70,6 +72,10 @@ namespace backend.Services
       {
         completeBeverage.Ingredients.Add(ingredient);
       }
+      foreach (var instruction in instructions)
+      {
+        completeBeverage.Instructions.Add(instruction);
+      }
       return completeBeverage;
     }
 
@@ -77,7 +83,8 @@ namespace backend.Services
       List<Beverage> beverages,
       List<Keyword> keywords,
       List<Ingredient> ingredients,
-      List<Classification> classifications
+      List<Classification> classifications,
+      List<Instruction> instructions
     )
     {
       var completeBeverages = new List<BeverageGraph>();
@@ -92,7 +99,8 @@ namespace backend.Services
             Image = beverage.Image,
             Native = beverage.Native,
             Keywords = new List<Keyword>(),
-            Ingredients = new List<Ingredient>()
+            Ingredients = new List<Ingredient>(),
+            Instructions = new List<Instruction>()
           }
         );
       }
@@ -108,6 +116,12 @@ namespace backend.Services
         var beverage = completeBeverages.Find(x => x.Id == ingredient.BeverageId);
         if (beverage is null) continue;
         beverage.Ingredients.Add(ingredient);
+      }
+      foreach (var instruction in instructions)
+      {
+        var beverage = completeBeverages.Find(x => x.Id == instruction.BeverageId);
+        if (beverage is null) continue;
+        beverage.Instructions.Add(instruction);
       }
       return completeBeverages;
     }

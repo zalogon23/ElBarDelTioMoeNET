@@ -19,5 +19,6 @@ namespace backend.Models
   {
     public List<Ingredient> Ingredients { get; set; }
     public List<Keyword> Keywords { get; set; }
+    public List<Instruction> Instructions { get; set; }
   }
 }

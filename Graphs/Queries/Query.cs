@@ -17,6 +17,7 @@ namespace backend.Graphs.Queries
       UsersServices users,
       KeywordsServices keywords,
       IngredientsServices ingredients,
+      InstructionsServices instructions,
       IJWTConfiguration jwtconfiguration
       )
     {
@@ -68,6 +69,7 @@ namespace backend.Graphs.Queries
             var allBeverages = await beverages.GetBeverages();
             var allKeywords = await keywords.GetKeywords();
             var allIngredients = await ingredients.GetIngredients();
+            var allInstructions = await instructions.GetInstructions();
             var allClassifications = await classifications.GetClassifications();
             var completeBeverages = new List<BeverageGraph>();
 
@@ -75,7 +77,8 @@ namespace backend.Graphs.Queries
               beverages: allBeverages,
               keywords: allKeywords,
               ingredients: allIngredients,
-              classifications: allClassifications
+              classifications: allClassifications,
+              instructions: allInstructions
             );
           }
       );
@@ -102,11 +105,13 @@ namespace backend.Graphs.Queries
             var allIngredients = await ingredients.GetByBeverageId(beverage.Id);
             var allKeywords = await keywords.GetKeywords();
             var allClassifications = await classifications.GetClassifications();
+            var allInstructions = await instructions.GetInstructionsByBeverageId(beverage.Id);
             return beverages.ConvertToGraphBeverage(
               beverage: beverage,
               ingredients: allIngredients,
               keywords: allKeywords,
-              classifications: allClassifications
+              classifications: allClassifications,
+              instructions: allInstructions
             );
           }
       );
@@ -133,8 +138,18 @@ namespace backend.Graphs.Queries
           {
             beverageIds.Add(classification.BeverageId);
           }
-          var classifiedBeverages = await beverages.GetBeveragesByIds(beverageIds);
-          return classifiedBeverages;
+          var allBeverages = await beverages.GetBeveragesByIds(beverageIds);
+          var allIngredients = await ingredients.GetIngredients();
+          var allKeywords = await keywords.GetKeywords();
+          var allClassifications = await classifications.GetClassifications();
+          var allInstructions = await instructions.GetInstructions();
+          return beverages.ConvertToGraphBeverages(
+            beverages: allBeverages,
+            ingredients: allIngredients,
+            instructions: allInstructions,
+            classifications: allClassifications,
+            keywords: allKeywords
+          );
         }
       );
     }

@@ -14,6 +14,7 @@ namespace backend.Graphs.GraphTypes
       Field(x => x.Native).Description("Is the Beverage Native");
       Field<ListGraphType<IngredientType>>("ingredients");
       Field<ListGraphType<KeywordType>>("keywords");
+      Field<ListGraphType<InstructionType>>("instructions");
     }
   }
 }

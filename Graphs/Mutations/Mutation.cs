@@ -42,7 +42,8 @@ namespace backend.Graphs.Mutations
             beverage: beverage,
             keywords: new List<Keyword>(),
             ingredients: new List<Ingredient>(),
-            classifications: new List<Classification>()
+            classifications: new List<Classification>(),
+            instructions: new List<Instruction>()
           );
           return completeBeverage;
         }
