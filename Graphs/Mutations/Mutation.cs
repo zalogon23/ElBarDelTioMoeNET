@@ -17,7 +17,8 @@ namespace backend.Graphs.Mutations
        KeywordsServices keywords,
        ClassificationsServices classifications,
        UsersServices users,
-       IngredientsServices ingredients
+       IngredientsServices ingredients,
+       InstructionsServices instructions
        )
     {
       FieldAsync<BeverageType>(
@@ -125,6 +126,23 @@ namespace backend.Graphs.Mutations
           await ingredients.RemoveIngredientsByBeverageId(passedIngredients[0].BeverageId);
           var createdIngredients = await ingredients.CreateIngredients(passedIngredients);
           return createdIngredients;
+        }
+      );
+      FieldAsync<ListGraphType<InstructionType>>(
+        "createInstructions",
+        arguments: new QueryArguments(
+          new QueryArgument<NonNullGraphType<ListGraphType<InstructionsInputType>>> { Name = "instructions" }
+        ),
+        resolve: async context =>
+        {
+          var passedInstructions = context.GetArgument<List<Instruction>>("instructions");
+          if (passedInstructions[0] is null)
+          {
+            return null;
+          }
+          await instructions.RemoveInstructionsByBeverageId(passedInstructions[0].BeverageId);
+          var createdInstructiosn = await instructions.CreateInstructions(passedInstructions);
+          return createdInstructiosn;
         }
       );
     }

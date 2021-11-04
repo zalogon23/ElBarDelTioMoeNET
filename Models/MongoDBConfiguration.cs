@@ -6,6 +6,7 @@ namespace backend.Models
     public string UsersCollectionName { get; set; }
     public string RefreshTokensCollectionName { get; set; }
     public string IngredientsCollectionName { get; set; }
+    public string InstructionsCollectionName { get; set; }
     public string KeywordsCollectionName { get; set; }
     public string ClassificationsCollectionName { get; set; }
     public string ConnectionString { get; set; }
@@ -18,6 +19,7 @@ namespace backend.Models
     string UsersCollectionName { get; set; }
     string RefreshTokensCollectionName { get; set; }
     string IngredientsCollectionName { get; set; }
+    string InstructionsCollectionName { get; set; }
     string KeywordsCollectionName { get; set; }
     string ClassificationsCollectionName { get; set; }
     string ConnectionString { get; set; }

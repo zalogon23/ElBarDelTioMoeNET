@@ -78,6 +78,7 @@ namespace backend
       services.AddSingleton<UsersServices>();
       services.AddSingleton<RefreshTokensServices>();
       services.AddSingleton<IngredientsServices>();
+      services.AddSingleton<InstructionsServices>();
 
       services.AddScoped<Query>();
       services.AddScoped<Mutation>();
