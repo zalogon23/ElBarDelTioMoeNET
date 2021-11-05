@@ -37,13 +37,15 @@ namespace backend.Graphs.Queries
             return null;
           }
           User user = (User)result;
-          return new User
+          return new UserGraph
           {
             Id = user.Id,
             Username = user.Username,
             Description = user.Description,
             Password = "No hay nada que ver aca",
-            Avatar = user.Avatar
+            Avatar = user.Avatar,
+            FavoriteBeverages=new List<Beverage>(),
+            CreatedBeverages=new List<Beverage>()
           };
         }
       );
@@ -58,7 +60,16 @@ namespace backend.Graphs.Queries
           var user = await users.GetUserById(userId);
           //Hide password
           user.Password = "No hay nada que ver aca";
-          return user;
+          return new UserGraph
+          {
+            Id = user.Id,
+            Username = user.Username,
+            Description = user.Description,
+            Password = "No hay nada que ver aca",
+            Avatar = user.Avatar,
+            FavoriteBeverages=new List<Beverage>(),
+            CreatedBeverages=new List<Beverage>()
+          };
 
         }
       );

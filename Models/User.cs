@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 
@@ -12,5 +13,9 @@ namespace backend.Models
     public string Password { get; set; }
     public string Description { get; set; }
     public string Avatar { get; set; }
+  }
+  public class UserGraph: User{
+    public List<Beverage> FavoriteBeverages { get; set; }
+    public List<Beverage> CreatedBeverages { get; set; }
   }
 }

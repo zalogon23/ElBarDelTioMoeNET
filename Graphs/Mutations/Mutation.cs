@@ -98,7 +98,7 @@ namespace backend.Graphs.Mutations
         {
           var argumentUser = context.GetArgument<User>("user");
           string hashedPassword = SaltHandler.GetHash(argumentUser.Password);
-          var user = new User
+          var passedUser = new User
           {
             Id = null,
             Username = argumentUser.Username,
@@ -106,10 +106,17 @@ namespace backend.Graphs.Mutations
             Description = argumentUser.Description,
             Avatar = argumentUser.Avatar
           };
-          var createdUser = await users.CreateUser(user);
-          //Hide password
-          createdUser.Password = "No hay nada que ver aca";
-          return createdUser;
+          var user = await users.CreateUser(passedUser);
+          return new UserGraph
+          {
+            Id = user.Id,
+            Username = user.Username,
+            Description = user.Description,
+            Password = "No hay nada que ver aca",
+            Avatar = user.Avatar,
+            FavoriteBeverages=new List<Beverage>(),
+            CreatedBeverages=new List<Beverage>()
+          };
         }
       );
       FieldAsync<ListGraphType<IngredientType>>(
