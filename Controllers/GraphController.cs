@@ -86,6 +86,7 @@ namespace backend.Controllers
     {
       string username = login.Username;
       string password = login.Password;
+      if(username.Length == 0 || password.Length == 0) return null;
       var user = await _users.GetUserByLogin(username: username, password: password);
       if (user is null)
       {
