@@ -21,9 +21,9 @@ namespace backend.Graphs.Queries
       IJWTConfiguration jwtconfiguration
       )
     {
-      Field<UserType>(
+      FieldAsync<UserType>(
         "self",
-        resolve: context =>
+        resolve: async context =>
         {
           var userContext = context.UserContext;
           if (userContext is null)
@@ -37,6 +37,29 @@ namespace backend.Graphs.Queries
             return null;
           }
           User user = (User)result;
+          var createdBeverages = await beverages.GetCreatedBeveragesByUserId(user.Id);
+          // var favoriteBeverages = await beverages.GetFavoriteBeveragesByUserId(user.Id);
+
+          var allIngredients = await ingredients.GetIngredients();
+          var allKeywords = await keywords.GetKeywords();
+          var allClassifications = await classifications.GetClassifications();
+          var allInstructions = await instructions.GetInstructions();
+
+          var createdGraphBeverages = beverages.ConvertToGraphBeverages(
+            beverages: createdBeverages,
+            ingredients: allIngredients,
+            instructions: allInstructions,
+            classifications: allClassifications,
+            keywords: allKeywords
+          );
+          // var favoriteGraphBeverages = beverages.ConvertToGraphBeverages(
+          //   beverages: favoriteBeverages,
+          //   ingredients: allIngredients,
+          //   instructions: allInstructions,
+          //   classifications: allClassifications,
+          //   keywords: allKeywords
+          // );
+
           return new UserGraph
           {
             Id = user.Id,
@@ -44,8 +67,8 @@ namespace backend.Graphs.Queries
             Description = user.Description,
             Password = "No hay nada que ver aca",
             Avatar = user.Avatar,
-            FavoriteBeverages=new List<Beverage>(),
-            CreatedBeverages=new List<Beverage>()
+            FavoriteBeverages = new List<BeverageGraph>(),
+            CreatedBeverages = createdGraphBeverages
           };
         }
       );
@@ -67,8 +90,8 @@ namespace backend.Graphs.Queries
             Description = user.Description,
             Password = "No hay nada que ver aca",
             Avatar = user.Avatar,
-            FavoriteBeverages=new List<Beverage>(),
-            CreatedBeverages=new List<Beverage>()
+            FavoriteBeverages = new List<BeverageGraph>(),
+            CreatedBeverages = new List<BeverageGraph>()
           };
 
         }

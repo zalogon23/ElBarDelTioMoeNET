@@ -14,8 +14,9 @@ namespace backend.Models
     public string Description { get; set; }
     public string Avatar { get; set; }
   }
-  public class UserGraph: User{
-    public List<Beverage> FavoriteBeverages { get; set; }
-    public List<Beverage> CreatedBeverages { get; set; }
+  public class UserGraph : User
+  {
+    public List<BeverageGraph> FavoriteBeverages { get; set; }
+    public List<BeverageGraph> CreatedBeverages { get; set; }
   }
 }

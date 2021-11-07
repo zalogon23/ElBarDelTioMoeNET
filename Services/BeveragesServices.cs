@@ -42,6 +42,16 @@ namespace backend.Services
       bool isDone = response.DeletedCount > 0;
       return isDone;
     }
+    public async Task<List<Beverage>> GetCreatedBeveragesByUserId(string userId)
+    {
+      var beverages = await _beverages.Find(x => x.Creator == userId).ToListAsync();
+      return beverages;
+    }
+    public async Task<List<Beverage>> GetFavoriteBeveragesByUserId(string userId)
+    {
+      var beverages = await _beverages.Find(x => x.Creator == userId).ToListAsync();
+      return beverages;
+    }
 
     public BeverageGraph ConvertToGraphBeverage(
       Beverage beverage,
@@ -56,6 +66,7 @@ namespace backend.Services
         Id = beverage.Id,
         Name = beverage.Name,
         Description = beverage.Description,
+        Creator = beverage.Creator,
         Image = beverage.Image,
         Native = beverage.Native,
         Keywords = new List<Keyword>(),
@@ -96,6 +107,7 @@ namespace backend.Services
             Id = beverage.Id,
             Name = beverage.Name,
             Description = beverage.Description,
+            Creator = beverage.Creator,
             Image = beverage.Image,
             Native = beverage.Native,
             Keywords = new List<Keyword>(),

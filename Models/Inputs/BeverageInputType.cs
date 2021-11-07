@@ -10,6 +10,7 @@ namespace backend.Models
       Field<NonNullGraphType<StringGraphType>>("name");
       Field<NonNullGraphType<StringGraphType>>("description");
       Field<NonNullGraphType<StringGraphType>>("image");
+      Field<StringGraphType>("creator");
       Field<NonNullGraphType<BooleanGraphType>>("native");
     }
   }

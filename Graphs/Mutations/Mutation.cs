@@ -35,6 +35,7 @@ namespace backend.Graphs.Mutations
             Name = argumentBeverage.Name,
             Description = argumentBeverage.Description,
             Image = argumentBeverage.Image,
+            Creator = argumentBeverage.Creator,
             Native = argumentBeverage.Native
           };
           var beverage = await beverages.CreateBeverage(newBeverage);
@@ -114,8 +115,8 @@ namespace backend.Graphs.Mutations
             Description = user.Description,
             Password = "No hay nada que ver aca",
             Avatar = user.Avatar,
-            FavoriteBeverages=new List<Beverage>(),
-            CreatedBeverages=new List<Beverage>()
+            FavoriteBeverages = new List<BeverageGraph>(),
+            CreatedBeverages = new List<BeverageGraph>()
           };
         }
       );
