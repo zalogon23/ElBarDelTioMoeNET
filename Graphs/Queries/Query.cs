@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using backend.Dtos;
 using backend.Graphs.GraphTypes;
 using backend.Models;
@@ -11,6 +12,7 @@ namespace backend.Graphs.Queries
 {
   public class Query : ObjectGraphType
   {
+    private readonly BeverageGraphServices beveragesGraph;
     public Query(
       BeveragesServices beverages,
       ClassificationsServices classifications,
@@ -48,25 +50,15 @@ namespace backend.Graphs.Queries
           var createdBeverages = await beverages.GetCreatedBeveragesByUserId(user.Id);
           var favoriteBeverages = await beverages.GetBeveragesByIds(beverageIds);
 
-          var allIngredients = await ingredients.GetIngredients();
-          var allKeywords = await keywords.GetKeywords();
-          var allClassifications = await classifications.GetClassifications();
-          var allInstructions = await instructions.GetInstructions();
+          var beverageFactory = new BeverageGraphServices(
+              ingredients: await ingredients.GetIngredients(),
+              keywords: await keywords.GetKeywords(),
+              classifications: await classifications.GetClassifications(),
+              instructions: await instructions.GetInstructions()
+          );
 
-          var createdGraphBeverages = beverages.ConvertToGraphBeverages(
-            beverages: createdBeverages,
-            ingredients: allIngredients,
-            instructions: allInstructions,
-            classifications: allClassifications,
-            keywords: allKeywords
-          );
-          var favoriteGraphBeverages = beverages.ConvertToGraphBeverages(
-            beverages: favoriteBeverages,
-            ingredients: allIngredients,
-            instructions: allInstructions,
-            classifications: allClassifications,
-            keywords: allKeywords
-          );
+          var createdGraphBeverages = beverageFactory.GetGraphBeverages(beverages, createdBeverages);
+          var favoriteGraphBeverages = beverageFactory.GetGraphBeverages(beverages, favoriteBeverages);
 
           return new UserGraph
           {
@@ -101,25 +93,16 @@ namespace backend.Graphs.Queries
           var createdBeverages = await beverages.GetCreatedBeveragesByUserId(user.Id);
           var favoriteBeverages = await beverages.GetBeveragesByIds(beverageIds);
 
-          var allIngredients = await ingredients.GetIngredients();
-          var allKeywords = await keywords.GetKeywords();
-          var allClassifications = await classifications.GetClassifications();
-          var allInstructions = await instructions.GetInstructions();
+          var beverageFactory = new BeverageGraphServices(
+              ingredients: await ingredients.GetIngredients(),
+              keywords: await keywords.GetKeywords(),
+              classifications: await classifications.GetClassifications(),
+              instructions: await instructions.GetInstructions()
+          );
 
-          var createdGraphBeverages = beverages.ConvertToGraphBeverages(
-            beverages: createdBeverages,
-            ingredients: allIngredients,
-            instructions: allInstructions,
-            classifications: allClassifications,
-            keywords: allKeywords
-          );
-          var favoriteGraphBeverages = beverages.ConvertToGraphBeverages(
-            beverages: favoriteBeverages,
-            ingredients: allIngredients,
-            instructions: allInstructions,
-            classifications: allClassifications,
-            keywords: allKeywords
-          );
+          var createdGraphBeverages = beverageFactory.GetGraphBeverages(beverages, createdBeverages);
+          var favoriteGraphBeverages = beverageFactory.GetGraphBeverages(beverages, favoriteBeverages);
+
           return new UserGraph
           {
             Id = user.Id,
@@ -130,7 +113,6 @@ namespace backend.Graphs.Queries
             FavoriteBeverages = favoriteGraphBeverages,
             CreatedBeverages = createdGraphBeverages
           };
-
         }
       );
       FieldAsync<ListGraphType<BeverageType>>(
@@ -138,19 +120,16 @@ namespace backend.Graphs.Queries
           resolve: async context =>
           {
             var allBeverages = await beverages.GetBeverages();
-            var allKeywords = await keywords.GetKeywords();
-            var allIngredients = await ingredients.GetIngredients();
-            var allInstructions = await instructions.GetInstructions();
-            var allClassifications = await classifications.GetClassifications();
-            var completeBeverages = new List<BeverageGraph>();
 
-            return beverages.ConvertToGraphBeverages(
-              beverages: allBeverages,
-              keywords: allKeywords,
-              ingredients: allIngredients,
-              classifications: allClassifications,
-              instructions: allInstructions
+            var beverageFactory = new BeverageGraphServices(
+                ingredients: await ingredients.GetIngredients(),
+                keywords: await keywords.GetKeywords(),
+                classifications: await classifications.GetClassifications(),
+                instructions: await instructions.GetInstructions()
             );
+
+            var allBeveragesGraph = beverageFactory.GetGraphBeverages(beverages, allBeverages);
+            return allBeveragesGraph;
           }
       );
       FieldAsync<ListGraphType<ClassificationType>>(
@@ -223,6 +202,35 @@ namespace backend.Graphs.Queries
           );
         }
       );
+    }
+  }
+  public class BeverageGraphServices
+  {
+    private readonly List<Ingredient> ingredients;
+    private readonly List<Instruction> instructions;
+    private readonly List<Keyword> keywords;
+    private readonly List<Classification> classifications;
+    public BeverageGraphServices(
+      List<Ingredient> ingredients,
+      List<Instruction> instructions,
+      List<Keyword> keywords,
+      List<Classification> classifications
+    )
+    {
+      this.ingredients = ingredients;
+      this.instructions = instructions;
+      this.keywords = keywords;
+      this.classifications = classifications;
+    }
+    public List<BeverageGraph> GetGraphBeverages(BeveragesServices beverages, List<Beverage> receivedBeverages)
+    {
+      return beverages.ConvertToGraphBeverages(
+            beverages: receivedBeverages,
+            ingredients: ingredients,
+            instructions: instructions,
+            classifications: classifications,
+            keywords: keywords
+          );
     }
   }
 }
