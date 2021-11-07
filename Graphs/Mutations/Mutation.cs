@@ -18,6 +18,7 @@ namespace backend.Graphs.Mutations
        ClassificationsServices classifications,
        UsersServices users,
        IngredientsServices ingredients,
+       FavoritesServices favorites,
        InstructionsServices instructions
        )
     {
@@ -88,6 +89,21 @@ namespace backend.Graphs.Mutations
           string keywordId = context.GetArgument<string>("keywordId");
           var classification = await classifications.CreateClassification(beverageId: beverageId, keywordId: keywordId);
           return classification;
+        }
+      );
+      FieldAsync<BooleanGraphType>(
+        "createFavorite",
+        arguments: new QueryArguments(
+          new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" },
+          new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "beverageId" }
+        ),
+        resolve: async context =>
+        {
+          var userId = context.GetArgument<string>("userId");
+          var beverageId = context.GetArgument<string>("beverageId");
+          if (userId.Length == 0 || beverageId.Length == 0) return false;
+          await favorites.CreateFavorite(userId: userId, beverageId: beverageId);
+          return true;
         }
       );
       FieldAsync<UserType>(

@@ -17,6 +17,7 @@ namespace backend.Graphs.Queries
       UsersServices users,
       KeywordsServices keywords,
       IngredientsServices ingredients,
+      FavoritesServices favorites,
       InstructionsServices instructions,
       IJWTConfiguration jwtconfiguration
       )
@@ -37,8 +38,15 @@ namespace backend.Graphs.Queries
             return null;
           }
           User user = (User)result;
+
+          var allFavorites = await favorites.GetFavoritesByUserId(user.Id);
+          List<string> beverageIds = new List<string>();
+          foreach (var favorite in allFavorites)
+          {
+            beverageIds.Add(favorite.BeverageId);
+          }
           var createdBeverages = await beverages.GetCreatedBeveragesByUserId(user.Id);
-          // var favoriteBeverages = await beverages.GetFavoriteBeveragesByUserId(user.Id);
+          var favoriteBeverages = await beverages.GetBeveragesByIds(beverageIds);
 
           var allIngredients = await ingredients.GetIngredients();
           var allKeywords = await keywords.GetKeywords();
@@ -52,13 +60,13 @@ namespace backend.Graphs.Queries
             classifications: allClassifications,
             keywords: allKeywords
           );
-          // var favoriteGraphBeverages = beverages.ConvertToGraphBeverages(
-          //   beverages: favoriteBeverages,
-          //   ingredients: allIngredients,
-          //   instructions: allInstructions,
-          //   classifications: allClassifications,
-          //   keywords: allKeywords
-          // );
+          var favoriteGraphBeverages = beverages.ConvertToGraphBeverages(
+            beverages: favoriteBeverages,
+            ingredients: allIngredients,
+            instructions: allInstructions,
+            classifications: allClassifications,
+            keywords: allKeywords
+          );
 
           return new UserGraph
           {
@@ -67,7 +75,7 @@ namespace backend.Graphs.Queries
             Description = user.Description,
             Password = "No hay nada que ver aca",
             Avatar = user.Avatar,
-            FavoriteBeverages = new List<BeverageGraph>(),
+            FavoriteBeverages = favoriteGraphBeverages,
             CreatedBeverages = createdGraphBeverages
           };
         }
@@ -83,6 +91,35 @@ namespace backend.Graphs.Queries
           var user = await users.GetUserById(userId);
           //Hide password
           user.Password = "No hay nada que ver aca";
+
+          var allFavorites = await favorites.GetFavoritesByUserId(user.Id);
+          List<string> beverageIds = new List<string>();
+          foreach (var favorite in allFavorites)
+          {
+            beverageIds.Add(favorite.BeverageId);
+          }
+          var createdBeverages = await beverages.GetCreatedBeveragesByUserId(user.Id);
+          var favoriteBeverages = await beverages.GetBeveragesByIds(beverageIds);
+
+          var allIngredients = await ingredients.GetIngredients();
+          var allKeywords = await keywords.GetKeywords();
+          var allClassifications = await classifications.GetClassifications();
+          var allInstructions = await instructions.GetInstructions();
+
+          var createdGraphBeverages = beverages.ConvertToGraphBeverages(
+            beverages: createdBeverages,
+            ingredients: allIngredients,
+            instructions: allInstructions,
+            classifications: allClassifications,
+            keywords: allKeywords
+          );
+          var favoriteGraphBeverages = beverages.ConvertToGraphBeverages(
+            beverages: favoriteBeverages,
+            ingredients: allIngredients,
+            instructions: allInstructions,
+            classifications: allClassifications,
+            keywords: allKeywords
+          );
           return new UserGraph
           {
             Id = user.Id,
@@ -90,8 +127,8 @@ namespace backend.Graphs.Queries
             Description = user.Description,
             Password = "No hay nada que ver aca",
             Avatar = user.Avatar,
-            FavoriteBeverages = new List<BeverageGraph>(),
-            CreatedBeverages = new List<BeverageGraph>()
+            FavoriteBeverages = favoriteGraphBeverages,
+            CreatedBeverages = createdGraphBeverages
           };
 
         }

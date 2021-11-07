@@ -47,11 +47,6 @@ namespace backend.Services
       var beverages = await _beverages.Find(x => x.Creator == userId).ToListAsync();
       return beverages;
     }
-    public async Task<List<Beverage>> GetFavoriteBeveragesByUserId(string userId)
-    {
-      var beverages = await _beverages.Find(x => x.Creator == userId).ToListAsync();
-      return beverages;
-    }
 
     public BeverageGraph ConvertToGraphBeverage(
       Beverage beverage,

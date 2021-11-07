@@ -28,7 +28,6 @@ namespace backend.Services
     public async Task<List<Instruction>> CreateInstructions(List<Instruction> instructions)
     {
       await _instructions.InsertManyAsync(instructions);
-      Console.WriteLine(instructions[0].Id);
       return instructions;
     }
     public async Task RemoveInstructionsByBeverageId(string beverageId)
