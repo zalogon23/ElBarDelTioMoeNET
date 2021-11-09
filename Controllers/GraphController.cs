@@ -42,118 +42,142 @@ namespace backend.Controllers
     [HttpPost("graphql")]
     public async Task<IActionResult> GraphQL(GraphQLRequestDto graphQLRequestDto)
     {
-      ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
-      var user = new Dictionary<string, object>();
-      if (identity != null)
+      try
       {
-        var id = identity?.FindFirst("userId")?.Value;
-        if (id != null)
+        ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+        var user = new Dictionary<string, object>();
+        if (identity != null)
         {
+          var id = identity?.FindFirst("userId")?.Value;
+          if (id != null)
+          {
 
-          var result = await _users.GetUserById(id);
-          user.Add("current", result);
+            var result = await _users.GetUserById(id);
+            user.Add("current", result);
+          }
+          else
+          {
+            user.Add("current", null);
+          }
+        }
+        var schema = new Schema
+        {
+          Query = _query,
+          Mutation = _mutation,
+
+        };
+        var inputs = graphQLRequestDto.Variables.ToInputs();
+        var json = await schema.ExecuteAsync(_ =>
+        {
+          _.Query = graphQLRequestDto.Query;
+          _.Inputs = inputs;
+          _.UserContext = user;
+        });
+
+        if (json is null)
+        {
+          return BadRequest();
         }
         else
         {
-          user.Add("current", null);
+          return Ok(json);
         }
       }
-      var schema = new Schema
+      catch (Exception e)
       {
-        Query = _query,
-        Mutation = _mutation,
-
-      };
-      var inputs = graphQLRequestDto.Variables.ToInputs();
-      var json = await schema.ExecuteAsync(_ =>
-      {
-        _.Query = graphQLRequestDto.Query;
-        _.Inputs = inputs;
-        _.UserContext = user;
-      });
-
-      if (json is null)
-      {
+        Console.WriteLine(e.Message);
         return BadRequest();
-      }
-      else
-      {
-        return Ok(json);
       }
     }
     [HttpPost("login")]
     public async Task<ActionResult<LoggedUserDto>> Login(LoginDto login)
     {
-      string username = login.Username;
-      string password = login.Password;
-      if(username.Length == 0 || password.Length == 0) return null;
-      var user = await _users.GetUserByLogin(username: username, password: password);
-      if (user is null)
+      try
       {
+        string username = login.Username;
+        string password = login.Password;
+        if (username.Length == 0 || password.Length == 0) return null;
+        var user = await _users.GetUserByLogin(username: username, password: password);
+        if (user is null)
+        {
+          return BadRequest();
+        }
+        string token = TokenHandler.CreateToken(secret: _configuration.SecretKey, userId: user.Id);
+        string refreshToken = TokenHandler.CreateRandomToken(secret: _configuration.SecretKey);
+
+        RefreshToken refreshTokenInstance = new RefreshToken()
+        {
+          Hash = refreshToken,
+          User = user.Id,
+          Valid = true,
+          Expires = DateTime.UtcNow.AddDays(7)
+        };
+
+        await _refreshTokens.InvalidAllRefreshTokens(user.Id);
+        await _refreshTokens.InsertRefreshToken(refreshTokenInstance);
+
+        CookieOptions options = new CookieOptions();
+        options.Expires = DateTime.Now.AddDays(7);
+        options.HttpOnly = true;
+        HttpContext.Response.Cookies.Append("refresh-token", refreshToken, options);
+
+        var loggedUserDto = new LoggedUserDto()
+        {
+          Id = user.Id,
+          Username = user.Username,
+          Password = "No hay nada que ver aca",
+          Description = user.Description,
+          Avatar = user.Avatar,
+          Token = token,
+        };
+        return Ok(loggedUserDto);
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine(e.Message);
         return BadRequest();
       }
-      string token = TokenHandler.CreateToken(secret: _configuration.SecretKey, userId: user.Id);
-      string refreshToken = TokenHandler.CreateRandomToken(secret: _configuration.SecretKey);
-
-      RefreshToken refreshTokenInstance = new RefreshToken()
-      {
-        Hash = refreshToken,
-        User = user.Id,
-        Valid = true,
-        Expires = DateTime.UtcNow.AddDays(7)
-      };
-
-      await _refreshTokens.InvalidAllRefreshTokens(user.Id);
-      await _refreshTokens.InsertRefreshToken(refreshTokenInstance);
-
-      CookieOptions options = new CookieOptions();
-      options.Expires = DateTime.Now.AddDays(7);
-      options.HttpOnly = true;
-      HttpContext.Response.Cookies.Append("refresh-token", refreshToken, options);
-
-      var loggedUserDto = new LoggedUserDto()
-      {
-        Id = user.Id,
-        Username = user.Username,
-        Password = "No hay nada que ver aca",
-        Description = user.Description,
-        Avatar = user.Avatar,
-        Token = token,
-      };
-      return Ok(loggedUserDto);
     }
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh()
     {
-      var previousRefreshToken = HttpContext.Request.Cookies["refresh-token"];
-      if (previousRefreshToken is null || previousRefreshToken.Length == 0)
+      try
       {
-        return Unauthorized();
+        var previousRefreshToken = HttpContext.Request.Cookies["refresh-token"];
+        if (previousRefreshToken is null || previousRefreshToken.Length == 0)
+        {
+          return Unauthorized();
+        }
+
+        var oldRefreshToken = await _refreshTokens.IsValid(previousRefreshToken);
+        if (oldRefreshToken is null)
+        {
+          return Unauthorized();
+        }
+
+        string userId = oldRefreshToken.User;
+
+        var refreshToken = new RefreshToken
+        {
+          Id = null,
+          Hash = TokenHandler.CreateRandomToken(_configuration.SecretKey),
+          User = userId,
+          Valid = true,
+          Expires = DateTime.UtcNow.AddDays(7)
+        };
+
+        string newToken = TokenHandler.CreateToken(secret: _configuration.SecretKey, userId: userId);
+
+        await _refreshTokens.InsertRefreshToken(refreshToken);
+        HttpContext.Response.Cookies.Append("refresh-token", refreshToken.Hash);
+
+        return Ok(newToken);
       }
-
-      var oldRefreshToken = await _refreshTokens.IsValid(previousRefreshToken);
-      if (oldRefreshToken is null)
+      catch (Exception e)
       {
-        return Unauthorized();
+        Console.WriteLine(e.Message);
+        return BadRequest();
       }
-
-      string userId = oldRefreshToken.User;
-
-      var refreshToken = new RefreshToken
-      {
-        Id = null,
-        Hash = TokenHandler.CreateRandomToken(_configuration.SecretKey),
-        User = userId,
-        Valid = true,
-        Expires = DateTime.UtcNow.AddDays(7)
-      };
-
-      string newToken = TokenHandler.CreateToken(secret: _configuration.SecretKey, userId: userId);
-
-      await _refreshTokens.InsertRefreshToken(refreshToken);
-      HttpContext.Response.Cookies.Append("refresh-token", refreshToken.Hash);
-
-      return Ok(newToken);
     }
   }
 }
