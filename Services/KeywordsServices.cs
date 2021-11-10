@@ -9,10 +9,9 @@ namespace backend.Services
   {
     private readonly IMongoCollection<Keyword> _keywords;
 
-    public KeywordsServices(IMongoDbConfiguration configuration)
+    public KeywordsServices(IMongoDbConfiguration configuration, MongoClient client)
     {
 
-      var client = new MongoClient(configuration.ConnectionString);
       var database = client.GetDatabase(configuration.DatabaseName);
       _keywords = database.GetCollection<Keyword>(configuration.KeywordsCollectionName);
     }

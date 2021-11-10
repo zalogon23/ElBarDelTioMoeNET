@@ -8,9 +8,8 @@ namespace backend.Services
   public class ClassificationsServices
   {
     private readonly IMongoCollection<Classification> _classifications;
-    public ClassificationsServices(IMongoDbConfiguration configuration)
+    public ClassificationsServices(IMongoDbConfiguration configuration, MongoClient client)
     {
-      var client = new MongoClient(configuration.ConnectionString);
       var database = client.GetDatabase(configuration.DatabaseName);
       _classifications = database.GetCollection<Classification>(configuration.ClassificationsCollectionName);
     }

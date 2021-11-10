@@ -9,9 +9,8 @@ namespace backend.Services
   {
     private readonly IMongoCollection<Ingredient> _ingredients;
 
-    public IngredientsServices(IMongoDbConfiguration configuration)
+    public IngredientsServices(IMongoDbConfiguration configuration, MongoClient client)
     {
-      var client = new MongoClient(configuration.ConnectionString);
       var database = client.GetDatabase(configuration.DatabaseName);
       _ingredients = database.GetCollection<Ingredient>(configuration.IngredientsCollectionName);
     }

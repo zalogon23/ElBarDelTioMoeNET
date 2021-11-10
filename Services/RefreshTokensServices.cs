@@ -7,9 +7,8 @@ namespace backend.Services
   public class RefreshTokensServices
   {
     private readonly IMongoCollection<RefreshToken> _refreshTokens;
-    public RefreshTokensServices(IMongoDbConfiguration configuration)
+    public RefreshTokensServices(IMongoDbConfiguration configuration, MongoClient client)
     {
-      var client = new MongoClient(configuration.ConnectionString);
       var database = client.GetDatabase(configuration.DatabaseName);
       _refreshTokens = database.GetCollection<RefreshToken>(configuration.RefreshTokensCollectionName);
     }

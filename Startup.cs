@@ -19,6 +19,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
 using backend.Graphs.Queries;
 using backend.Graphs.Mutations;
+using MongoDB.Driver;
 
 namespace backend
 {
@@ -71,6 +72,13 @@ namespace backend
         sp.GetRequiredService<IOptions<MongoDBConfiguration>>().Value);
       services.AddSingleton<IJWTConfiguration>(sp =>
         sp.GetRequiredService<IOptions<JWTConfiguration>>().Value);
+
+      services.AddSingleton(sp =>
+      {
+        string connectionString = sp.GetRequiredService<IMongoDbConfiguration>().ConnectionString;
+        var client = new MongoClient(connectionString);
+        return client;
+      });
 
       services.AddSingleton<BeveragesServices>();
       services.AddSingleton<KeywordsServices>();

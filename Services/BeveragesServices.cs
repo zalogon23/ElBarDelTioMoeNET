@@ -9,9 +9,8 @@ namespace backend.Services
   public class BeveragesServices
   {
     private readonly IMongoCollection<Beverage> _beverages;
-    public BeveragesServices(IMongoDbConfiguration configuration)
+    public BeveragesServices(IMongoDbConfiguration configuration, MongoClient client)
     {
-      var client = new MongoClient(configuration.ConnectionString);
       var database = client.GetDatabase(configuration.DatabaseName);
       _beverages = database.GetCollection<Beverage>(configuration.BeveragesCollectionName);
     }

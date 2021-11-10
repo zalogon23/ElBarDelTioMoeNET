@@ -8,9 +8,8 @@ namespace backend.Services
   public class FavoritesServices
   {
     private readonly IMongoCollection<Favorite> favorites;
-    public FavoritesServices(IMongoDbConfiguration configuration)
+    public FavoritesServices(IMongoDbConfiguration configuration, MongoClient client)
     {
-      var client = new MongoClient(configuration.ConnectionString);
       var database = client.GetDatabase(configuration.DatabaseName);
       favorites = database.GetCollection<Favorite>(configuration.FavoritesCollectionName);
     }

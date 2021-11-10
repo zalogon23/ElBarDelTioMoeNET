@@ -10,9 +10,8 @@ namespace backend.Services
   {
     private readonly IMongoCollection<Instruction> _instructions;
 
-    public InstructionsServices(IMongoDbConfiguration configuration)
+    public InstructionsServices(IMongoDbConfiguration configuration, MongoClient client)
     {
-      var client = new MongoClient(configuration.ConnectionString);
       var database = client.GetDatabase(configuration.DatabaseName);
       _instructions = database.GetCollection<Instruction>(configuration.InstructionsCollectionName);
     }

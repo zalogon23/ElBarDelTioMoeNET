@@ -8,9 +8,8 @@ namespace backend.Services
   public class UsersServices
   {
     private readonly IMongoCollection<User> _users;
-    public UsersServices(IMongoDbConfiguration configuration)
+    public UsersServices(IMongoDbConfiguration configuration, MongoClient client)
     {
-      var client = new MongoClient(configuration.ConnectionString);
       var database = client.GetDatabase(configuration.DatabaseName);
       _users = database.GetCollection<User>(configuration.UsersCollectionName);
     }
