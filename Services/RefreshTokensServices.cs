@@ -32,11 +32,7 @@ namespace backend.Services
     }
     public async Task<RefreshToken> IsValid(string refreshToken)
     {
-      var foundRefreshToken = await (await _refreshTokens.FindAsync(x => x.Hash == refreshToken)).FirstAsync<RefreshToken>();
-      if (foundRefreshToken != null)
-      {
-        await InvalidAllRefreshTokens(foundRefreshToken.User);
-      }
+      var foundRefreshToken = await _refreshTokens.Find(x => x.Hash == refreshToken && x.Valid == true).FirstOrDefaultAsync();
       return foundRefreshToken;
     }
   }

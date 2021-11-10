@@ -116,11 +116,6 @@ namespace backend.Controllers
         await _refreshTokens.InvalidAllRefreshTokens(user.Id);
         await _refreshTokens.InsertRefreshToken(refreshTokenInstance);
 
-        CookieOptions options = new CookieOptions();
-        options.Expires = DateTime.Now.AddDays(7);
-        options.HttpOnly = true;
-        HttpContext.Response.Cookies.Append("refresh-token", refreshToken, options);
-
         var loggedUserDto = new LoggedUserDto()
         {
           Id = user.Id,
@@ -129,6 +124,7 @@ namespace backend.Controllers
           Description = user.Description,
           Avatar = user.Avatar,
           Token = token,
+          RefreshToken = refreshToken
         };
         return Ok(loggedUserDto);
       }
@@ -139,11 +135,11 @@ namespace backend.Controllers
       }
     }
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh()
+    public async Task<ActionResult<RefreshedTokenDto>> Refresh(RefreshDto refreshDto)
     {
       try
       {
-        var previousRefreshToken = HttpContext.Request.Cookies["refresh-token"];
+        var previousRefreshToken = refreshDto.RefreshToken;
         if (previousRefreshToken is null || previousRefreshToken.Length == 0)
         {
           return Unauthorized();
@@ -169,9 +165,14 @@ namespace backend.Controllers
         string newToken = TokenHandler.CreateToken(secret: _configuration.SecretKey, userId: userId);
 
         await _refreshTokens.InsertRefreshToken(refreshToken);
-        HttpContext.Response.Cookies.Append("refresh-token", refreshToken.Hash);
 
-        return Ok(newToken);
+        var refreshedTokens = new RefreshedTokenDto
+        {
+          Token = newToken,
+          RefreshToken = refreshToken.Hash
+        };
+
+        return Ok(refreshedTokens);
       }
       catch (Exception e)
       {
