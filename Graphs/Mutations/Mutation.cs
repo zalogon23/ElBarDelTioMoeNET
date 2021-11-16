@@ -29,25 +29,71 @@ namespace backend.Graphs.Mutations
         ),
         resolve: async context =>
         {
-          var argumentBeverage = context.GetArgument<Beverage>("beverage");
-          var newBeverage = new Beverage
+          try
           {
-            Id = null,
-            Name = argumentBeverage.Name,
-            Description = argumentBeverage.Description,
-            Image = argumentBeverage.Image,
-            Creator = argumentBeverage.Creator,
-            Native = argumentBeverage.Native
-          };
-          var beverage = await beverages.CreateBeverage(newBeverage);
-          var completeBeverage = beverages.ConvertToGraphBeverage(
-            beverage: beverage,
-            keywords: new List<Keyword>(),
-            ingredients: new List<Ingredient>(),
-            classifications: new List<Classification>(),
-            instructions: new List<Instruction>()
-          );
-          return completeBeverage;
+            var argumentBeverage = context.GetArgument<BeverageGraph>("beverage");
+            var newBeverage = new Beverage
+            {
+              Id = null,
+              Name = argumentBeverage.Name,
+              Description = argumentBeverage.Description,
+              Image = argumentBeverage.Image,
+              Creator = argumentBeverage.Creator,
+              Native = argumentBeverage.Native
+            };
+            var beverage = await beverages.CreateBeverage(newBeverage);
+            foreach (var ingredient in argumentBeverage.Ingredients)
+            {
+              ingredient.BeverageId = beverage.Id;
+            }
+            foreach (var instruction in argumentBeverage.Instructions)
+            {
+              instruction.BeverageId = beverage.Id;
+            }
+            var createdIngredients = await ingredients.CreateIngredients(argumentBeverage.Ingredients);
+            var createdInstructions = await instructions.CreateInstructions(argumentBeverage.Instructions);
+
+            var newClassifications = new List<Classification>();
+            foreach (var keyword in argumentBeverage.Keywords)
+            {
+              var newClassification = new Classification
+              {
+                Id = null,
+                BeverageId = beverage.Id,
+                KeywordId = keyword.Id
+              };
+              newClassifications.Add(newClassification);
+            };
+
+            var createdClassifications = await classifications.CreateClassifications(newClassifications);
+            var argumentKeywords = new List<string>();
+            foreach (var keyword in argumentBeverage.Keywords)
+            {
+              argumentKeywords.Add(keyword.Id);
+            }
+            var selectedKeywords = await keywords.GetKeywords(argumentKeywords);
+
+            var completeBeverage = new BeverageGraph
+            {
+              Id = beverage.Id,
+              Name = beverage.Name,
+              Creator = beverage.Creator,
+              Description = beverage.Description,
+              Native = beverage.Native,
+              Ingredients = createdIngredients,
+              Instructions = createdInstructions,
+              Keywords = selectedKeywords
+            };
+            return completeBeverage;
+          }
+          catch (Exception e)
+          {
+            Console.WriteLine(e.StackTrace);
+            return null;
+          }
+          finally
+          {
+          }
         }
       );
       FieldAsync<BooleanGraphType>(
@@ -156,7 +202,7 @@ namespace backend.Graphs.Mutations
       FieldAsync<ListGraphType<InstructionType>>(
         "createInstructions",
         arguments: new QueryArguments(
-          new QueryArgument<NonNullGraphType<ListGraphType<InstructionsInputType>>> { Name = "instructions" }
+          new QueryArgument<NonNullGraphType<ListGraphType<InstructionInputType>>> { Name = "instructions" }
         ),
         resolve: async context =>
         {

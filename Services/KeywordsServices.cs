@@ -31,5 +31,11 @@ namespace backend.Services
       var keywords = await _keywords.Find(x => true).ToListAsync();
       return keywords;
     }
+
+    public async Task<List<Keyword>> GetKeywords(List<string> ids)
+    {
+      var keywords = await _keywords.Find(x => ids.Contains(x.Id)).ToListAsync();
+      return keywords;
+    }
   }
 }

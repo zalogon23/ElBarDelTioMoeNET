@@ -27,6 +27,7 @@ namespace backend.Services
 
     public async Task<List<Ingredient>> CreateIngredients(List<Ingredient> ingredients)
     {
+      if (ingredients.Count == 0) return null;
       await _ingredients.InsertManyAsync(ingredients);
       return ingredients;
     }

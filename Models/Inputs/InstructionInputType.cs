@@ -2,14 +2,14 @@ using GraphQL.Types;
 
 namespace backend.Models.Inputs
 {
-  public class InstructionsInputType : InputObjectGraphType
+  public class InstructionInputType : InputObjectGraphType
   {
-    public InstructionsInputType()
+    public InstructionInputType()
     {
       Name = "InstructionInput";
       Field<NonNullGraphType<StringGraphType>>("content");
       Field<NonNullGraphType<IntGraphType>>("order");
-      Field<NonNullGraphType<StringGraphType>>("beverageId");
+      Field<StringGraphType>("beverageId");
     }
   }
 }

@@ -26,6 +26,7 @@ namespace backend.Services
     }
     public async Task<List<Instruction>> CreateInstructions(List<Instruction> instructions)
     {
+      if (instructions.Count == 0) return null;
       await _instructions.InsertManyAsync(instructions);
       return instructions;
     }

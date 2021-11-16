@@ -10,7 +10,7 @@ namespace backend.Models.Inputs
       Field<NonNullGraphType<StringGraphType>>("product");
       Field<NonNullGraphType<FloatGraphType>>("quantity");
       Field<NonNullGraphType<StringGraphType>>("measure");
-      Field<NonNullGraphType<StringGraphType>>("beverageId");
+      Field<StringGraphType>("beverageId");
     }
   }
 }

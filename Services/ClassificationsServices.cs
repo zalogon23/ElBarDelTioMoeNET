@@ -24,6 +24,12 @@ namespace backend.Services
       await _classifications.InsertOneAsync(classification);
       return classification;
     }
+    public async Task<List<Classification>> CreateClassifications(List<Classification> listOfClassifications)
+    {
+      if (listOfClassifications.Count == 0) return null;
+      await _classifications.InsertManyAsync(listOfClassifications);
+      return listOfClassifications;
+    }
     public async Task<List<Classification>> GetClassifications()
     {
       var classifications = await _classifications.Find(x => true).ToListAsync();
